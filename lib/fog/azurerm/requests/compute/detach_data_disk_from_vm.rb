@@ -3,12 +3,13 @@ module Fog
     class AzureRM
       # This class provides the actual implementation for service calls.
       class Real
-        def detach_data_disk_from_vm(resource_group, vm_name, disk_name, async)
-          msg = "Detaching Data Disk #{disk_name} from Virtual Machine #{vm_name} in Resource Group #{resource_group}."
+        def detach_data_disk_from_vm(resource_group, vm_name, disk_names, async)
+          disk_names = disk_names.is_a?(Array) ? disk_names : [disk_names]
+          msg = "Detaching Data Disk #{disk_names.join(', ')} from Virtual Machine #{vm_name} in Resource Group #{resource_group}."
           Fog::Logger.debug msg
           vm = get_virtual_machine_instance(resource_group, vm_name)
           vm.storage_profile.data_disks.each_with_index do |disk, index|
-            if disk.name == disk_name
+            if disk_names.include? disk.name
               vm.storage_profile.data_disks.delete_at(index)
             end
           end
@@ -24,7 +25,7 @@ module Fog
           if async
             response
           else
-            Fog::Logger.debug "Data Disk #{disk_name} detached from Virtual Machine #{vm_name} successfully."
+            Fog::Logger.debug "Data Disk #{disk_names.join(', ')} detached from Virtual Machine #{vm_name} successfully."
             virtual_machine
           end
         end

@@ -164,7 +164,7 @@ module Fog
         end
 
         def attach_data_disk(disk_name, disk_size, storage_account_name, async = false)
-          response = service.attach_data_disk_to_vm(data_disk_params(disk_name, disk_size, storage_account_name), async)
+          response = service.attach_data_disk_to_vm(data_disk_params(disk_name, nil, disk_size, storage_account_name), async)
           async ? create_fog_async_response(response) : merge_attributes(Fog::Compute::AzureRM::Server.parse(response))
         end
 
@@ -174,7 +174,11 @@ module Fog
         end
 
         def attach_managed_disk(disk_name, disk_resource_group, async = false)
-          response = service.attach_data_disk_to_vm(data_disk_params(disk_name, nil, nil, disk_resource_group), async)
+          attach_managed_disks(disk_name, disk_resource_group, async)
+        end
+
+        def attach_managed_disks(disk_names, disk_resource_group, async = false)
+          response = service.attach_data_disk_to_vm(data_disk_params(disk_names,nil, nil, disk_resource_group), async)
           async ? create_fog_async_response(response) : merge_attributes(Fog::Compute::AzureRM::Server.parse(response))
         end
 
@@ -244,8 +248,8 @@ module Fog
           }
         end
 
-        def data_disk_params(disk_name, disk_size = nil, storage_account = nil, disk_resource_group = nil)
-          {
+        def data_disk_params(disk_names, disk_size = nil, storage_account = nil, disk_resource_group = nil)
+          params = {
             vm_name: name,
             vm_resource_group: resource_group,
             disk_name: disk_name,
@@ -253,6 +257,9 @@ module Fog
             storage_account_name: storage_account,
             disk_resource_group: disk_resource_group
           }
+          key = disk_names.is_a?(Array) ? :disk_names : :disk_name
+          params[key] = disk_names
+          params
         end
 
         def delete_storage_account_or_container(resource_group, storage_account_name, vm_name)

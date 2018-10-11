@@ -252,7 +252,6 @@ module Fog
           params = {
             vm_name: name,
             vm_resource_group: resource_group,
-            disk_name: disk_name,
             disk_size_gb: disk_size,
             storage_account_name: storage_account,
             disk_resource_group: disk_resource_group

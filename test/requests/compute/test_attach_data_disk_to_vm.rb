@@ -66,7 +66,8 @@ class TestAttachDataDiskToVM < Minitest::Test
       @storage_accounts.stub :list_keys, @storage_access_keys_response do
         @virtual_machines.stub :create_or_update, @update_vm_response do
           assert_raises RuntimeError do
-            @service.attach_data_disk_to_vm(@input_params, false)
+            input_params = { vm_name: 'fog-test-vm', vm_resource_group: 'fog-test-rg', disk_name: 'disk16', disk_size_gb: 100, disk_resource_group: 'fog-test-rg' }
+            @service.attach_data_disk_to_vm(input_params, false)
           end
         end
       end

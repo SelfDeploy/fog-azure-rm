@@ -17,15 +17,10 @@ module Fog
           msg = "Attaching Data Disk #{disk_names.join(', ')} to Virtual Machine #{vm_name} in Resource Group #{vm_resource_group}"
           Fog::Logger.debug msg
           vm = get_virtual_machine_instance(vm_resource_group, vm_name)
-          lun = get_logical_unit_number(vm.storage_profile.data_disks)
+
           access_key = get_storage_access_key(vm_resource_group, storage_account_name) if storage_account_name
 
-          data_disks = get_list_data_disks(disk_names, disk_size, lun, storage_account_name, access_key, disk_resource_group)
-
-          data_disks.each do |data_disk|
-            vm.storage_profile.data_disks.push(data_disk)
-          end
-
+          attach_data_disks(disk_names, disk_size, vm, storage_account_name, access_key, disk_resource_group)
           begin
             if async
               response = @compute_mgmt_client.virtual_machines.create_or_update_async(vm_resource_group, vm_name, vm)
@@ -49,13 +44,17 @@ module Fog
 
         private
 
-        def get_list_data_disks(disk_names, disk_size, lun, storage_account_name, access_key, disk_resource_group)
+        def attach_data_disks(disk_names, disk_size, vm, storage_account_name, access_key, disk_resource_group)
+          disk_names.delete_if { |disk_name|
+            vm.storage_profile.data_disks.map(&:name).include?(disk_name) }
           disk_names.map do |disk_name|
+            lun = get_logical_unit_number(vm.storage_profile.data_disks)
             if storage_account_name
-              get_unmanaged_disk_object(disk_name, disk_size, lun, storage_account_name, access_key)
+              data_disk = get_unmanaged_disk_object(disk_name, disk_size, lun, storage_account_name, access_key)
             elsif disk_resource_group
-              get_data_disk_object(disk_resource_group, disk_name, lun)
+              data_disk = get_data_disk_object(disk_resource_group, disk_name, lun)
             end
+            vm.storage_profile.data_disks.push(data_disk)
           end
         end
 

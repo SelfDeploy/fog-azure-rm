@@ -8,11 +8,7 @@ module Fog
           msg = "Detaching Data Disk #{disk_names.join(', ')} from Virtual Machine #{vm_name} in Resource Group #{resource_group}."
           Fog::Logger.debug msg
           vm = get_virtual_machine_instance(resource_group, vm_name)
-          vm.storage_profile.data_disks.each_with_index do |disk, index|
-            if disk_names.include? disk.name
-              vm.storage_profile.data_disks.delete_at(index)
-            end
-          end
+          vm.storage_profile.data_disks.delete_if {|disk| disk_names.include? disk.name }
           begin
             if async
               response = @compute_mgmt_client.virtual_machines.create_or_update_async(resource_group, vm_name, vm)

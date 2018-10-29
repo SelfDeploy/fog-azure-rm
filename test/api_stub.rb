@@ -81,6 +81,7 @@ module ApiStub
       autoload :ManagedDisk, File.expand_path('api_stub/requests/compute/managed_disk', __dir__)
       autoload :Image, File.expand_path('api_stub/requests/compute/image', __dir__)
       autoload :Snapshot, File.expand_path('api_stub/requests/compute/snapshot', __dir__)
+      autoload :VirtualMachineSize, File.expand_path('api_stub/requests/compute/virtual_machine_size', __dir__)
     end
 
     # Load test Resources requests

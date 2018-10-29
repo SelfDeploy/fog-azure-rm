@@ -59,6 +59,7 @@ module Fog
       model :virtual_machine_extension
       collection :virtual_machine_extensions
       model :virtual_machine_size
+      collection :virtual_machine_sizes
       model :managed_disk
       collection :managed_disks
       model :snapshot

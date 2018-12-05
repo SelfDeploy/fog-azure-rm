@@ -49,6 +49,7 @@ module Fog
       request :list_snapshots_in_subscription
       request :get_snapshot
       request :delete_snapshot
+      request :list_virtual_machine_sizes
 
       model_path 'fog/azurerm/models/compute'
       model :availability_set
@@ -57,6 +58,8 @@ module Fog
       collection :servers
       model :virtual_machine_extension
       collection :virtual_machine_extensions
+      model :virtual_machine_size
+      collection :virtual_machine_sizes
       model :managed_disk
       collection :managed_disks
       model :snapshot

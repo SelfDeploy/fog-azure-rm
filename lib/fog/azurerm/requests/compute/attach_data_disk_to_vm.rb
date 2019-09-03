@@ -53,7 +53,7 @@ module Fog
             if storage_account_name
               data_disk = get_unmanaged_disk_object(disk_name, disk_size, lun, storage_account_name, access_key)
             elsif disk_resource_group
-              get_data_disk_object(disk_resource_group, disk_name, lun, caching)
+              data_disk = get_data_disk_object(disk_resource_group, disk_name, lun, caching)
             end
             vm.storage_profile.data_disks.push(data_disk)
           end
